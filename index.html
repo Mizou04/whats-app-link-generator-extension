@@ -1,0 +1,47 @@
+<!-- the extension index page -->
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<main class="app">
+		<!--
+		<div class="tabs">
+			<a href="/index.html" class="active">main</a>
+			<a href="/config.html">config</a>
+		</div>
+		-->
+		<div class="body">
+			<div class="result">
+			<h3 class="result_number">
+				- - - - - - - 
+			</h3>
+			<button class="retry">retry<button>
+			</div>
+			<a href="" class="wa_link">send blank msg to : </a>
+			<form method="post" action="https://wa.me/">
+			<span>or</span>
+				<label for="text" class="text_label">
+					start with default message: <br>
+				</label>
+					<span class="you_can">
+						(you can add extra default messages in config tab)
+					</span>
+				<select 
+					name="text"
+					class="text">
+					<option value="">none</option>
+				</select>
+				<button class="submit_btn" type="submit">Send Message</button>
+				<a href="" id="options">
+					options
+				</a>
+			</form>
+		</div>
+	</main>
+	<script src="ui.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>
+
