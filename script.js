@@ -7,7 +7,6 @@ retry_btn.addEventListener("click", () => {
 
 retrievNumberFromDocument();
 function retrievNumberFromDocument() {
-	console.log("hhhh")
 	chrome.tabs.query({}, (tabs) => {
 		let activeTab = tabs.find(tab => tab.active === true);
 		chrome.tabs.sendMessage(
@@ -26,14 +25,16 @@ function onResponse(res){
 		console.error("something went wrong : ", err?.message);
 		return;
 	}
-	console.log("sent from outside (file: script worker)");
-	console.log(res)
 	result_number.textContent = res.data.replace(/\s+/gi, "-");
+
 	let processed_num = processNumber(res.data);
 	let link = "https://wa.me/" + processed_num;
 	let wa_link = document.querySelector(".wa_link");
-	wa_link.textContent += res.data.replace(/\s+/gi, "-");
-	wa_link.href = link;
+
+	wa_link.textContent = "send blank msg to : " + result_number.textContent;
+	wa_link.setAttribute("href", link);
+	wa_link.setAttribute("target", "_blank");
+	//TODO: add default message
 }
 
 /*

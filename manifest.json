@@ -3,12 +3,12 @@
  "version" : "0.0.1",
  "manifest_version" : 3,
  "permissions": [
-    "offscreen",
-    "scripting",
-    "activeTab",
-    "devtools",
-		"debugger"
-  ],
+	 "storage",
+	 "offscreen",
+	 "scripting",
+	 "activeTab",
+	 "devtools"
+ ],
 	"action": {
     "default_title": "whatsapp number reader",
 		"default_popup": "index.html"
