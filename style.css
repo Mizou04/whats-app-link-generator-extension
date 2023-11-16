@@ -1,3 +1,13 @@
+:root {
+	--background        : hsl(80, 50%, 100%); 
+	--background--hover : hsl(80, 50%, 90%); 
+	--primary           : hsl(150.39deg, 99.13%, 45.29%); 
+	--text-solid        : white;
+	--text-outline      : white;
+	--text-info         : darkgray;
+	--text-warn         : hsl(0, 100%, 40%);
+}
+
 * {
 	padding: 0;
 	margin: 0;
@@ -39,8 +49,8 @@ body {
 .app .result .retry {
 	font-size: 12px;
 	padding: 5px 10px;
-	background: #01e675;
-	color: white;
+	background: var(--primary);
+	color: var(--text-solid);
 	font-weight: 600;
 	border: none; 
 	border-radius: 5px;
@@ -81,10 +91,10 @@ body {
 }
 
 .app .submit_btn {
-	background: #01e675;
-	color: white;
+	background: var(--primary);
+	color: var(--text-solid);
 	font-weight: 700;
-	box-shadow: 2px 2px 10px hsl(150.39deg, 99.13%, 45.29%);
+	box-shadow: 2px 2px 10px var(--primary);
 	border: none; 
 	border-radius: 5px;
 	cursor: pointer;
@@ -117,15 +127,15 @@ body {
 
 .config .body .no_msg {
 	text-align: center;
-	color : darkgray;
+	color : var(--text-info);
 }
 
 .config .add_msg {
 	padding: 10px;
-	background: #01e675;
-	color: white;
+	background: var(--primary);
+	color: var(--text-solid);
 	font-weight: 700;
-	box-shadow: 2px 2px 10px hsl(150.39deg, 99.13%, 45.29%);
+	box-shadow: 2px 2px 10px var(--primary);
 	border: none; 
 	border-radius: 5px;
 	margin-top: 5px;
@@ -164,7 +174,8 @@ body {
 	padding: 5px 10px;
 	background: hsl(120, 50%, 95%);
 	font-weight: 400;
-	border: 1px darkgray solid; 
+	color : var(--text-outline);
+	border: 1px var(--text-outline) solid; 
 	border-radius: 5px;
 	margin: 0px 5px;
 	cursor: pointer;
@@ -172,10 +183,10 @@ body {
 
 .config .msg_form_wrapper .msg_form_actions .submit {
 	padding: 5px 10px;
-	background: #01e675;
+	background: var(--primary);
 	color: white;
 	font-weight: 700;
-	box-shadow: 2px 2px 10px hsl(150.39deg, 99.13%, 45.29%);
+	box-shadow: 2px 2px 10px var(--primary);
 	border: none; 
 	border-radius: 5px;
 	cursor: pointer;
@@ -183,9 +194,9 @@ body {
 
 .config .add_msg:disabled,
 .config .msg_form_wrapper .msg_form_actions .submit:disabled {
-	background: darkgray;
+	background: lightgray;
 	box-shadow: none;
-	color : gray;
+	color : var(--text-info);
 	font-weight: 400;
 	cursor: default;
 }
@@ -197,13 +208,18 @@ body {
 	transition: box-shadow 0.1s 0s ease;
 }
 
-	/*TODO*/
 .config .msg_form_wrapper .msg_title_error {
-	color : red;
+	color : var(--text-warn);
 	font-size: .7em;
 }
 
 .config .msg_ui {
-	background: red;
+	background: var(--background);
+	padding : 10px 10px;
+	margin: 5px 0px;
+}
 
+.config .msg_ui:hover {
+	background: var(--background--hover);
+	cursor: pointer;
 }

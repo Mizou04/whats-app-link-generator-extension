@@ -38,12 +38,12 @@ function setAddBtnState() {
 setAddBtnState();
 
 function registerNewMsgHandler(){
-	ADD_BTN.addEventListener("click", showNewMsgForm);
+	ADD_BTN.addEventListener("click", renderNewMsgForm);
 };
 
 registerNewMsgHandler();
 
-function showNewMsgForm(e) {
+function renderNewMsgForm(e) {
 	e.preventDefault();
 	let form = createMsgForm();
 	CONFIG_BODY.append(form);
@@ -69,7 +69,7 @@ function createMsgForm(){
 			);
 		input.addEventListener("input", inputChangeHandler);
 		text_area.addEventListener("input", inputChangeHandler);
-		submit_btn.addEventListener("click", storeMsgHandler);
+		submit_btn.onclick = storeMsgHandler;
 		cancel_btn.addEventListener("click", cancelEditingHandler);
 	}
 	{ // styles block
@@ -143,11 +143,67 @@ function cancelEditingHandler(e) {
 }
 
 function createMsgUI(message) {
-	let content = `
-		<div class="msg_ui">
-		<p class="msg_ui_title">${message.title}</p>
-		</div>
-		`
-	return content;
+	let msg_ui_wrapper = document.createElement("div");
+	let msg_ui_title   = document.createElement("p");
+	let randomizer     =  Math.floor(Math.random()*182612156133);
+	let duplicateID = MESSAGES.filter(msg => msg.randomId == randomizer);
+	if(duplicateID.length) createMsgUI(message);
+	duplicateID = undefined;
+
+	message.randomId = randomizer;
+	msg_ui_wrapper.classList.add("msg_ui", `msg_ui--${randomizer}`);
+	msg_ui_title.classList.add("msg_ui_title", `msg_ui_title--${randomizer}`);
+
+	msg_ui_title.textContent = message.title;
+	msg_ui_wrapper.appendChild(msg_ui_title);
+
+	return msg_ui_wrapper.outerHTML;
 }
 
+document.addEventListener("click", (e) => {
+	for(let message of MESSAGES) {
+		let tcl = e.target.classList;
+		if(null
+			|| tcl.contains(`msg_ui--${message.randomId}`) 
+			|| tcl.contains(`msg_ui_title--${message.randomId}`))
+		{
+			msgUiOnClickHandler(e, message);
+		}
+	}
+})
+
+function msgUiOnClickHandler(msgUiEvent, message) {
+	let title = message.title;
+	let msg   = message.msg;
+	let form  = createMsgForm();
+	let form_msg_title = form.querySelector(".msg_form_title");
+	let form_msg_msg   = form.querySelector(".msg_form_msg");
+
+	form_msg_title.value = title;
+	form_msg_msg.value   = msg;
+
+	let msg_ui_wrapper = msgUiEvent.target;
+	if(msg_ui_wrapper
+		.classList
+		.contains(`msg_ui_title--${message.randomId}`))
+		msg_ui_wrapper = msg_ui_wrapper.parentElement;
+	//msg_ui_wrapper.style.background = "blue";
+	msg_ui_wrapper.replaceWith(form);
+
+	let form_submit_btn = form.querySelector(".submit");
+
+	form_submit_btn.onclick = (formEvent) => { // update msg
+		formEvent.preventDefault();
+
+		
+		if(!form_msg_title.value.length) return;
+		if(!form_msg_msg.value.length) return;
+		let targetMsg = MESSAGES.filter((msg) => msg.title == title).length // > 0
+
+		targetMsg.title = form_msg_title.value;
+		targetMsg.msg   = form_msg_msg.value;
+		checkForMessages();
+		isEditing = false;
+		setAddBtnState();
+	}
+}
