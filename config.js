@@ -3,7 +3,6 @@ const MESSAGES = [];
 
 const CONFIG = document.querySelector(".config");
 const CONFIG_BODY = CONFIG.querySelector(".body");
-const TITLE_ERROR = document.createElement("span");
 const ADD_BTN = document.querySelector(".add_msg");
 let isEditing = false;
 		
@@ -60,6 +59,7 @@ function createMsgForm(){
 	let actions = document.createElement("div");
 	let cancel_btn = document.createElement("button");
 	let submit_btn = document.createElement("button");
+	const TITLE_ERROR = document.createElement("span");
 	{ // listeners block
 		const inputChangeHandler = 
 			disableCreateBtnIfNoMsgOrTitle(
@@ -106,6 +106,7 @@ let temp_global_msg_object = {};
 function disableCreateBtnIfNoMsgOrTitle(input, text_area, submit_btn) {
 	return function inputChangeHandler(e){
 		e.preventDefault();
+		const TITLE_ERROR = document.querySelector(".msg_title_error");
 		temp_global_msg_object.title = input.value;
 		temp_global_msg_object.msg   = text_area.value;
 		TITLE_ERROR.textContent = "";
@@ -124,6 +125,7 @@ function storeMsgHandler(e) {
 	if(!msg.length) return;
 	let duplicate = MESSAGES.filter((msg) => msg.title == title).length // > 0
 	if(duplicate) {
+		const TITLE_ERROR = document.querySelector(".msg_title_error");
 		TITLE_ERROR.textContent = "message with same title exist already...";
 		return;
 	}
@@ -172,9 +174,7 @@ document.addEventListener("click", (e) => {
 	}
 })
 
-function msgUiOnClickHandler(msgUiEvent, message) {
-	let title = message.title;
-	let msg   = message.msg;
+function msgUiOnClickHandler(msgUiEvent, {title, msg, randomId}) {
 	let form  = createMsgForm();
 	let form_msg_title = form.querySelector(".msg_form_title");
 	let form_msg_msg   = form.querySelector(".msg_form_msg");
@@ -185,10 +185,12 @@ function msgUiOnClickHandler(msgUiEvent, message) {
 	let msg_ui_wrapper = msgUiEvent.target;
 	if(msg_ui_wrapper
 		.classList
-		.contains(`msg_ui_title--${message.randomId}`))
+		.contains(`msg_ui_title--${randomId}`))
 		msg_ui_wrapper = msg_ui_wrapper.parentElement;
 	//msg_ui_wrapper.style.background = "blue";
 	msg_ui_wrapper.replaceWith(form);
+	isEditing = true;
+	setAddBtnState();
 
 	let form_submit_btn = form.querySelector(".submit");
 
@@ -198,9 +200,22 @@ function msgUiOnClickHandler(msgUiEvent, message) {
 		
 		if(!form_msg_title.value.length) return;
 		if(!form_msg_msg.value.length) return;
-		let targetMsg = MESSAGES.filter((msg) => msg.title == title).length // > 0
+		let targetMsg = MESSAGES.find((msg) => msg.title == title) // > 0
+		let duplicate = MESSAGES.filter(omsg => { //other messages
+			return omsg.title != targetMsg.title && omsg.title == form_msg_title.value;
+		}).length;
 
-		targetMsg.title = form_msg_title.value;
+		{ // duplicate warning
+			const TITLE_ERROR = document.querySelector(".msg_title_error");
+			if(!duplicate)
+				targetMsg.title = form_msg_title.value;
+			else {
+				TITLE_ERROR.textContent = "message with same title\
+				exist already...";
+				return;
+			}
+			TITLE_ERROR.textContent = "";
+		}
 		targetMsg.msg   = form_msg_msg.value;
 		checkForMessages();
 		isEditing = false;

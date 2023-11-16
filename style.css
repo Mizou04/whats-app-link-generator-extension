@@ -3,7 +3,7 @@
 	--background--hover : hsl(80, 50%, 90%); 
 	--primary           : hsl(150.39deg, 99.13%, 45.29%); 
 	--text-solid        : white;
-	--text-outline      : white;
+	--text-outline      : gray;
 	--text-info         : darkgray;
 	--text-warn         : hsl(0, 100%, 40%);
 }
