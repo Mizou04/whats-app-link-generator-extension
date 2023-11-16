@@ -1,5 +1,4 @@
-const MESSAGES = [];
-
+let MESSAGES;
 
 const CONFIG = document.querySelector(".config");
 const CONFIG_BODY = CONFIG.querySelector(".body");
@@ -8,26 +7,36 @@ let isEditing = false;
 		
 function checkForMessages() {
 	let no_msg_txt = document.createElement("p");
-
-	if(!MESSAGES.length) {
-		no_msg_txt.textContent = "no entries yet";
-		no_msg_txt.classList.add("no_msg");
-		CONFIG_BODY.innerHTML = no_msg_txt.outerHTML;
-	} else {
-		let msgForm = CONFIG_BODY.querySelector(".msg_form_wrapper");
-		msgForm?.remove();
-		no_msg_txt?.remove();
-		CONFIG_BODY.innerHTML = ""
-		for(let message of MESSAGES) {
-			CONFIG_BODY.innerHTML += createMsgUI(message);
-		}
-	}
-	setAddBtnState();
+	chrome.storage.sync.get("MESSAGES")
+		.then(result => {
+			console.log(result.MESSAGES)
+			if(!result.MESSAGES || !result.MESSAGES?.length){ 
+				MESSAGES = [];
+				throw "not yet set"
+			}
+			MESSAGES = [...result.MESSAGES];
+		})
+		.catch(info => {
+			console.info(info);
+		})
+		.finally(()=> {
+			if(!MESSAGES.length) {
+				no_msg_txt.textContent = "no entries yet";
+				no_msg_txt.classList.add("no_msg");
+				CONFIG_BODY.innerHTML = no_msg_txt.outerHTML;
+			} else {
+				let msgForm = CONFIG_BODY.querySelector(".msg_form_wrapper");
+				msgForm?.remove();
+				no_msg_txt?.remove();
+				CONFIG_BODY.innerHTML = ""
+				for(let message of MESSAGES) {
+					CONFIG_BODY.innerHTML += createMsgUI(message);
+				}
+			}
+			setAddBtnState();
+		})
 }
 
-for(let i = 0; i < 20; i++){
-	MESSAGES.push({title : "id"+i, msg : "msg number " + i})
-}
 checkForMessages();
 
 function setAddBtnState() {
@@ -70,6 +79,10 @@ function createMsgForm(){
 		input.addEventListener("input", inputChangeHandler);
 		text_area.addEventListener("input", inputChangeHandler);
 		submit_btn.onclick = storeMsgHandler;
+		input.addEventListener("keypress", kbdEvent => {
+			if(kbdEvent.key.toLowerCase() == "enter")
+				storeMsgHandler(kbdEvent)
+		})
 		cancel_btn.addEventListener("click", cancelEditingHandler);
 	}
 	{ // styles block
@@ -130,6 +143,7 @@ function storeMsgHandler(e) {
 		return;
 	}
 	MESSAGES.push({title, msg});
+	chrome.storage.sync.set({MESSAGES});
 	temp_global_msg_object.title = temp_global_msg_object.msg = "";
 	checkForMessages();
 	isEditing = false;
@@ -189,14 +203,20 @@ function msgUiOnClickHandler(msgUiEvent, {title, msg, randomId}) {
 		msg_ui_wrapper = msg_ui_wrapper.parentElement;
 	//msg_ui_wrapper.style.background = "blue";
 	msg_ui_wrapper.replaceWith(form);
+	form.scrollIntoView({inline : "nearest", behavior : "smooth"})
 	isEditing = true;
 	setAddBtnState();
 
 	let form_submit_btn = form.querySelector(".submit");
+	form_submit_handler.textContent = "Update";
 
-	form_submit_btn.onclick = (formEvent) => { // update msg
-		formEvent.preventDefault();
+	form_submit_btn.onclick = form_submit_handler;
+	form_msg_title.addEventListener("keydown", (event) => {
+		if(event.key.toLowerCase() == "enter")
+			form_submit_handler();
+	})
 
+	function form_submit_handler() { // update msg
 		
 		if(!form_msg_title.value.length) return;
 		if(!form_msg_msg.value.length) return;
